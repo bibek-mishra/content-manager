@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TypoBibek — Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0a;
+  --bg2: #111111;
+  --bg3: #1a1a1a;
+  --bg4: #222222;
+  --border: #2a2a2a;
+  --border2: #333333;
+  --text: #f0f0f0;
+  --text2: #888888;
+  --text3: #555555;
+  --accent: #c8ff00;
+  --accent2: #a8d600;
+  --red: #ff4444;
+  --orange: #ff8c00;
+  --blue: #4488ff;
+  --purple: #9966ff;
+  --green: #00cc88;
+  --font: 'Syne', sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 100vh;
+}
+
+.sidebar {
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 28px 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.logo {
+  padding: 0 24px 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo-text {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.logo-text span { color: var(--accent); }
+
+.logo-sub {
+  font-size: 11px;
+  color: var(--text3);
+  font-family: var(--mono);
+  margin-top: 4px;
+  letter-spacing: 0.05em;
+}
+
+.day-progress {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.day-label {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--text3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.day-nums {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.day-current {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.day-total {
+  font-size: 14px;
+  color: var(--text3);
+  font-family: var(--mono);
+}
+
+.progress-track {
+  height: 2px;
+  background: var(--border);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 1px;
+  transition: width 0.4s ease;
+}
+
+.stats-mini {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.stat-mini {
+  background: var(--bg3);
+  border-radius: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+}
+
+.stat-mini-num {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+
+.stat-mini-label {
+  font-size: 10px;
+  color: var(--text3);
+  font-family: var(--mono);
+  margin-top: 2px;
+}
+
+.nav {
+  flex: 1;
+  padding: 16px 0;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 24px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text3);
+  transition: all 0.15s;
+  letter-spacing: 0.02em;
+  border-left: 2px solid transparent;
+  position: relative;
+}
+
+.nav-item:hover { color: var(--text2); background: var(--bg3); }
+
+.nav-item.active {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  background: rgba(200, 255, 0, 0.04);
+}
+
+.nav-icon {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-icon svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.sidebar-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+}
+
+.streak {
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--text3);
+}
+
+.streak span { color: var(--orange); font-weight: 500; }
+
+.main {
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.section { display: none; }
+.section.active { display: block; }
+
+.section-header {
+  padding: 32px 40px 24px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 10;
+}
+
+.section-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.section-title span { color: var(--accent); }
+
+.section-body { padding: 32px 40px; }
+
+.grid30-wrap { margin-bottom: 36px; }
+
+.grid30-label {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--text3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.grid30 {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 6px;
+}
+
+.day-cell {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: var(--mono);
+  color: var(--text3);
+  transition: all 0.15s;
+  position: relative;
+  user-select: none;
+}
+
+.day-cell:hover { border-color: var(--border2); color: var(--text2); transform: scale(1.05); }
+
+.day-cell.today {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(200, 255, 0, 0.06);
+  font-weight: 700;
+}
+
+.day-cell.posted {
+  background: rgba(0, 204, 136, 0.12);
+  border-color: rgba(0, 204, 136, 0.4);
+  color: var(--green);
+}
+
+.day-cell.posted::after {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--green);
+  position: absolute;
+  bottom: 4px;
+}
+
+.day-cell.future { opacity: 0.3; }
+
+.checklist-wrap { margin-bottom: 32px; }
+
+.checklist-label {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--text3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.progress-text {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.check-list { display: flex; flex-direction: column; gap: 6px; }
+
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.check-item:hover { border-color: var(--border2); background: var(--bg3); }
+
+.check-item.done { opacity: 0.45; }
+.check-item.done .check-label { text-decoration: line-through; color: var(--text3); }
+
+.check-box {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  border: 1.5px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.check-item.done .check-box {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.check-box svg { width: 11px; height: 11px; stroke: #000; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; display: none; }
+.check-item.done .check-box svg { display: block; }
+
+.check-label { font-size: 14px; font-weight: 500; flex: 1; }
+
+.check-tag {
+  font-size: 10px;
+  font-family: var(--mono);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.tag-plan { background: rgba(255, 140, 0, 0.15); color: var(--orange); }
+.tag-record { background: rgba(68, 136, 255, 0.15); color: var(--blue); }
+.tag-edit { background: rgba(153, 102, 255, 0.15); color: var(--purple); }
+.tag-post { background: rgba(0, 204, 136, 0.15); color: var(--green); }
+
+.reset-btn {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  font-size: 12px;
+  font-family: var(--mono);
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.04em;
+}
+
+.reset-btn:hover { color: var(--red); border-color: rgba(255, 68, 68, 0.3); background: rgba(255, 68, 68, 0.05); }
+.reset-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.scripts-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+
+.script-card {
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+
+.script-card:hover { border-color: var(--border2); }
+
+.script-head {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.script-head:hover { background: var(--bg3); }
+
+.script-day {
+  font-size: 10px;
+  font-family: var(--mono);
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(68, 136, 255, 0.15);
+  color: var(--blue);
+  flex-shrink: 0;
+}
+
+.script-name { font-size: 14px; font-weight: 600; flex: 1; color: var(--text); }
+.script-name.empty { color: var(--text3); font-style: italic; font-weight: 400; }
+
+.script-status {
+  font-size: 10px;
+  font-family: var(--mono);
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.status-ready { background: rgba(0, 204, 136, 0.15); color: var(--green); }
+.status-draft { background: rgba(255, 140, 0, 0.15); color: var(--orange); }
+
+.script-chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--text3);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.script-chevron svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.script-card.open .script-chevron { transform: rotate(180deg); }
+
+.script-body {
+  display: none;
+  padding: 0 18px 18px;
+  border-top: 1px solid var(--border);
+}
+
+.script-card.open .script-body { display: block; }
+
+.script-field { margin-top: 14px; }
+
+.field-label {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--text3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.field-input, .field-textarea {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+  padding: 10px 12px;
+  transition: border-color 0.15s;
+  resize: vertical;
+  min-height: 52px;
+  line-height: 1.5;
+}
+
+.field-input:focus, .field-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.field-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.field-select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.field-select:focus { outline: none; border-color: var(--accent); }
+
+.del-btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  font-family: var(--mono);
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+}
+
+.del-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.del-btn:hover { color: var(--red); border-color: rgba(255, 68, 68, 0.3); background: rgba(255, 68, 68, 0.05); }
+
+.add-card-btn {
+  width: 100%;
+  padding: 13px;
+  border-radius: 10px;
+  border: 1px dashed var(--border2);
+  background: transparent;
+  color: var(--text3);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s;
+  letter-spacing: 0.02em;
+}
+
+.add-card-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.add-card-btn:hover { color: var(--accent); border-color: rgba(200, 255, 0, 0.3); background: rgba(200, 255, 0, 0.03); }
+
+.ideas-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
+
+.idea-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  transition: all 0.15s;
+  animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.idea-item:hover { border-color: var(--border2); }
+
+.idea-text { font-size: 14px; font-weight: 500; flex: 1; }
+
+.idea-cat {
+  font-size: 10px;
+  font-family: var(--mono);
+  padding: 3px 10px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+.cat-value { background: rgba(68, 136, 255, 0.15); color: var(--blue); }
+.cat-viral { background: rgba(255, 68, 68, 0.15); color: var(--red); }
+.cat-series { background: rgba(255, 140, 0, 0.15); color: var(--orange); }
+.cat-authentic { background: rgba(0, 204, 136, 0.15); color: var(--green); }
+.cat-lifestyle { background: rgba(153, 102, 255, 0.15); color: var(--purple); }
+
+.idea-del-btn {
+  background: none;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.idea-del-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.idea-del-btn:hover { color: var(--red); background: rgba(255, 68, 68, 0.1); }
+
+.idea-add-row {
+  display: flex;
+  gap: 8px;
+}
+
+.idea-text-input {
+  flex: 1;
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+  transition: border-color 0.15s;
+}
+
+.idea-text-input:focus { outline: none; border-color: var(--accent); }
+
+.idea-cat-select {
+  padding: 11px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 12px;
+  cursor: pointer;
+  min-width: 110px;
+}
+
+.idea-cat-select:focus { outline: none; border-color: var(--accent); }
+
+.idea-submit-btn {
+  padding: 11px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border2);
+  background: var(--bg3);
+  color: var(--accent);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.idea-submit-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.idea-submit-btn:hover { background: rgba(200, 255, 0, 0.1); border-color: rgba(200, 255, 0, 0.3); }
+
+.sb-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+
+.sb-card {
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+
+.sb-card:hover { border-color: var(--border2); }
+
+.sb-head {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.sb-head:hover { background: var(--bg3); }
+.sb-title { font-size: 14px; font-weight: 600; flex: 1; }
+.sb-title.empty { color: var(--text3); font-style: italic; font-weight: 400; }
+
+.sb-chevron {
+  width: 16px;
+  color: var(--text3);
+  transition: transform 0.2s;
+}
+
+.sb-chevron svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.sb-card.open .sb-chevron { transform: rotate(180deg); }
+
+.sb-body {
+  display: none;
+  padding: 0 18px 18px;
+  border-top: 1px solid var(--border);
+}
+
+.sb-card.open .sb-body { display: block; }
+
+.sb-table-head {
+  display: grid;
+  grid-template-columns: 90px 1fr 1fr;
+  gap: 8px;
+  padding: 12px 0 8px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+
+.sb-table-head span {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sb-row {
+  display: grid;
+  grid-template-columns: 90px 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.sb-input {
+  padding: 8px 10px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  transition: border-color 0.15s;
+  width: 100%;
+}
+
+.sb-input:focus { outline: none; border-color: var(--accent); }
+
+.sb-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.sb-add-row-btn {
+  padding: 7px 12px;
+  border-radius: 7px;
+  border: 1px dashed var(--border2);
+  background: transparent;
+  color: var(--text3);
+  font-family: var(--mono);
+  font-size: 11px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+}
+
+.sb-add-row-btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.sb-add-row-btn:hover { color: var(--accent); border-color: rgba(200, 255, 0, 0.3); }
+
+.sb-title-input {
+  flex: 1;
+  padding: 7px 10px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 12px;
+}
+
+.sb-title-input:focus { outline: none; border-color: var(--accent); }
+
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text3);
+  font-size: 14px;
+  font-family: var(--mono);
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.empty-state .empty-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+  opacity: 0.4;
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-text">Typo<span>Bibek</span></div>
+      <div class="logo-sub" id="sb-day-label">DAY 1 / 30</div>
+    </div>
+
+    <div class="day-progress">
+      <div class="day-label">Progress</div>
+      <div class="day-nums">
+        <div class="day-current" id="sb-day-num">1</div>
+        <div class="day-total">/ 30</div>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="sb-progress" style="width:3%"></div>
+      </div>
+      <div class="stats-mini">
+        <div class="stat-mini">
+          <div class="stat-mini-num" id="sb-posted">0</div>
+          <div class="stat-mini-label">posted</div>
+        </div>
+        <div class="stat-mini">
+          <div class="stat-mini-num" id="sb-left">30</div>
+          <div class="stat-mini-label">left</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <div class="nav-item active" onclick="switchTab('today')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div>
+        Today
+      </div>
+      <div class="nav-item" onclick="switchTab('scripts')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+        Scripts
+      </div>
+      <div class="nav-item" onclick="switchTab('ideas')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        Ideas
+      </div>
+      <div class="nav-item" onclick="switchTab('board')">
+        <div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+        Storyboard
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="streak" id="streak-text">Keep going —</div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <div id="tab-today" class="section active">
+      <div class="section-header">
+        <div class="section-title">Today — <span id="today-day-label">Day 1</span></div>
+      </div>
+      <div class="section-body">
+
+        <div class="grid30-wrap">
+          <div class="grid30-label">30 day map — click a day to mark posted</div>
+          <div class="grid30" id="grid30"></div>
+        </div>
+
+        <div class="checklist-wrap">
+          <div class="checklist-label">
+            <span>Today's checklist</span>
+            <span class="progress-text" id="check-progress">0 / 7</span>
+          </div>
+          <div class="check-list" id="checklist"></div>
+          <button class="reset-btn" onclick="resetToday()">
+            <svg viewBox="0 0 24 24"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 1 0 .49-4.95"/></svg>
+            Reset today
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="tab-scripts" class="section">
+      <div class="section-header">
+        <div class="section-title">Scripts</div>
+      </div>
+      <div class="section-body">
+        <div class="scripts-list" id="scripts-list"></div>
+        <button class="add-card-btn" onclick="addScript()">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New script
+        </button>
+      </div>
+    </div>
+
+    <div id="tab-ideas" class="section">
+      <div class="section-header">
+        <div class="section-title">Idea Vault</div>
+      </div>
+      <div class="section-body">
+        <div class="ideas-list" id="ideas-list"></div>
+        <div class="idea-add-row">
+          <input type="text" class="idea-text-input" id="idea-input" placeholder="Drop an idea instantly..." onkeydown="if(event.key==='Enter')addIdea()">
+          <select class="idea-cat-select" id="idea-cat">
+            <option value="value">Value</option>
+            <option value="viral">Viral</option>
+            <option value="series">Series</option>
+            <option value="authentic">Authentic</option>
+            <option value="lifestyle">Lifestyle</option>
+          </select>
+          <button class="idea-submit-btn" onclick="addIdea()">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-board" class="section">
+      <div class="section-header">
+        <div class="section-title">Storyboard</div>
+      </div>
+      <div class="section-body">
+        <div class="sb-list" id="sb-list"></div>
+        <button class="add-card-btn" onclick="addStoryboard()">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New storyboard
+        </button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const TASKS = [
+  {id:'script', text:'Finalize script', tag:'plan', cls:'tag-plan'},
+  {id:'audio',  text:'Record audio (10 takes)', tag:'record', cls:'tag-record'},
+  {id:'take',   text:'Pick best take', tag:'record', cls:'tag-record'},
+  {id:'sb',     text:'Write storyboard', tag:'plan', cls:'tag-plan'},
+  {id:'edit',   text:'Edit video', tag:'edit', cls:'tag-edit'},
+  {id:'post',   text:'Export + post', tag:'post', cls:'tag-post'},
+  {id:'comments',text:'Check comments', tag:'post', cls:'tag-post'},
+];
+
+function ls(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } }
+function ss(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+
+let S = {
+  startDate:   ls('tb_start', new Date().toDateString()),
+  postedDays:  ls('tb_posted', {}),
+  checks:      ls('tb_checks', {}),
+  scripts:     ls('tb_scripts', [{
+    id:'s1', day:'Day 1', title:'Sabse bada unfair advantage', status:'ready', open:false,
+    hook:'Sabse bada unfair advantage jo tumhare paas hai — tumhara ghar aur tumhara phone.',
+    setup:'Mera naam Bibek hai, aur main ek hostel mein rehta hoon jahan mobile aur laptop dono allowed nahi hain.',
+    build:'Normal log 2-3 months mein itni editing seekhte hain — mujhe 7 mahine lage, 2 vacations aur kuch leaves mein.',
+    punchline:'Aadhi vacation learning mein gayi, ab baaki mein kuch build karna hai.',
+    cta:'Yeh tha Day 1 of 30. Follow karo. Main Bibek — signing off.'
+  }]),
+  ideas: ls('tb_ideas', [
+    {id:'i1', text:'Why talented log broke rehte hain', cat:'value'},
+    {id:'i2', text:'2am productive, 2pm useless — psychology', cat:'viral'},
+    {id:'i3', text:'Jo goal batao woh complete kyun nahi hota', cat:'value'},
+    {id:'i4', text:'Hostel mein band rehke skills kaise seekhe', cat:'series'},
+    {id:'i5', text:'Indian parents vs ambition', cat:'value'},
+  ]),
+  storyboards: ls('tb_sb', [{
+    id:'sb1', title:'Day 1 — Unfair Advantage', open:false,
+    rows:[
+      {time:'0:00–0:03', voice:'Sabse bada unfair advantage...', screen:'Bold text: UNFAIR ADVANTAGE appears'},
+      {time:'0:03–0:10', voice:'Mera naam Bibek, hostel mein rehta hoon', screen:'Backrooms monkey pfp + name text'},
+      {time:'0:10–0:25', voice:'Mobile aur laptop allowed nahi', screen:'Crossed out icons, sad gif'},
+      {time:'0:25–0:40', voice:'Normal 2-3 months, mujhe 7 mahine lage', screen:'Timeline animation: 2-3m vs 7m'},
+      {time:'0:40–0:55', voice:'Day 1 of 30. Follow karo. Signing off.', screen:'DAY 1/30 text. End card.'},
+    ]
+  }])
+};
+
+ss('tb_start', S.startDate);
+
+function getDay() {
+  const diff = Math.floor((new Date() - new Date(S.startDate)) / 86400000);
+  return Math.min(Math.max(diff + 1, 1), 30);
+}
+
+function countPosted() { return Object.values(S.postedDays).filter(Boolean).length; }
+
+function renderSidebar() {
+  const day = getDay();
+  const posted = countPosted();
+  const left = Math.max(30 - day + 1, 0);
+  document.getElementById('sb-day-label').textContent = `DAY ${day} / 30`;
+  document.getElementById('sb-day-num').textContent = day;
+  document.getElementById('sb-progress').style.width = Math.round((day / 30) * 100) + '%';
+  document.getElementById('sb-posted').textContent = posted;
+  document.getElementById('sb-left').textContent = left;
+  document.getElementById('today-day-label').textContent = `Day ${day}`;
+  const streakEl = document.getElementById('streak-text');
+  streakEl.innerHTML = posted > 0 ? `<span>${posted}</span> video${posted > 1 ? 's' : ''} posted` : 'Keep going —';
+}
+
+function renderGrid() {
+  const day = getDay();
+  const el = document.getElementById('grid30');
+  el.innerHTML = '';
+  for (let i = 1; i <= 30; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'day-cell';
+    cell.textContent = i;
+    if (S.postedDays[i]) cell.classList.add('posted');
+    else if (i === day) cell.classList.add('today');
+    else if (i > day) cell.classList.add('future');
+    cell.onclick = () => { S.postedDays[i] = !S.postedDays[i]; ss('tb_posted', S.postedDays); renderGrid(); renderSidebar(); };
+    el.appendChild(cell);
+  }
+}
+
+function renderChecklist() {
+  const day = getDay();
+  const key = 'd' + day;
+  if (!S.checks[key]) S.checks[key] = {};
+  const done = Object.values(S.checks[key]).filter(Boolean).length;
+  document.getElementById('check-progress').textContent = `${done} / ${TASKS.length}`;
+  const el = document.getElementById('checklist');
+  el.innerHTML = '';
+  TASKS.forEach(t => {
+    const isDone = !!S.checks[key][t.id];
+    const item = document.createElement('div');
+    item.className = 'check-item' + (isDone ? ' done' : '');
+    item.innerHTML = `
+      <div class="check-box">
+        <svg viewBox="0 0 24 24"><polyline points="20,6 9,17 4,12"/></svg>
+      </div>
+      <span class="check-label">${t.text}</span>
+      <span class="check-tag ${t.cls}">${t.tag}</span>`;
+    item.onclick = () => {
+      S.checks[key][t.id] = !isDone;
+      ss('tb_checks', S.checks);
+      renderChecklist();
+    };
+    el.appendChild(item);
+  });
+}
+
+function resetToday() {
+  const key = 'd' + getDay();
+  S.checks[key] = {};
+  ss('tb_checks', S.checks);
+  renderChecklist();
+}
+
+function renderScripts() {
+  const el = document.getElementById('scripts-list');
+  el.innerHTML = '';
+  if (!S.scripts.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">&#9998;</div>No scripts yet. Add your first one.</div>';
+    return;
+  }
+  S.scripts.forEach((sc, i) => {
+    const card = document.createElement('div');
+    card.className = 'script-card' + (sc.open ? ' open' : '');
+    const titleEmpty = !sc.title;
+    const statusCls = sc.status === 'ready' ? 'status-ready' : 'status-draft';
+    card.innerHTML = `
+      <div class="script-head" onclick="toggleScript(${i})">
+        <span class="script-day">${sc.day || 'New'}</span>
+        <span class="script-name${titleEmpty ? ' empty' : ''}">${sc.title || 'Untitled script'}</span>
+        <span class="script-status ${statusCls}">${sc.status}</span>
+        <div class="script-chevron"><svg viewBox="0 0 24 24"><polyline points="6,9 12,15 18,9"/></svg></div>
+      </div>
+      <div class="script-body">
+        <div class="script-field">
+          <label class="field-label">Title</label>
+          <input class="field-input" style="min-height:auto;resize:none" value="${esc(sc.title||'')}" oninput="updateScript(${i},'title',this.value)" placeholder="Video title...">
+        </div>
+        <div class="script-field">
+          <label class="field-label">Hook — first 3 seconds</label>
+          <textarea class="field-textarea" oninput="updateScript(${i},'hook',this.value)" placeholder="What grabs them immediately...">${esc(sc.hook||'')}</textarea>
+        </div>
+        <div class="script-field">
+          <label class="field-label">Setup</label>
+          <textarea class="field-textarea" oninput="updateScript(${i},'setup',this.value)" placeholder="Context and situation...">${esc(sc.setup||'')}</textarea>
+        </div>
+        <div class="script-field">
+          <label class="field-label">Build — the meat</label>
+          <textarea class="field-textarea" oninput="updateScript(${i},'build',this.value)" placeholder="Main content...">${esc(sc.build||'')}</textarea>
+        </div>
+        <div class="script-field">
+          <label class="field-label">Punchline / Ending</label>
+          <textarea class="field-textarea" oninput="updateScript(${i},'punchline',this.value)" placeholder="What they remember...">${esc(sc.punchline||'')}</textarea>
+        </div>
+        <div class="script-field">
+          <label class="field-label">CTA / Sign-off</label>
+          <textarea class="field-textarea" oninput="updateScript(${i},'cta',this.value)" placeholder="Follow karo, signing off...">${esc(sc.cta||'')}</textarea>
+        </div>
+        <div class="field-row">
+          <select class="field-select" onchange="updateScript(${i},'status',this.value)">
+            <option value="draft"${sc.status==='draft'?' selected':''}>Draft</option>
+            <option value="ready"${sc.status==='ready'?' selected':''}>Ready</option>
+          </select>
+          <input class="field-input" style="flex:1;min-height:auto;resize:none" value="${esc(sc.day||'')}" oninput="updateScript(${i},'day',this.value)" placeholder="Day label e.g. Day 1">
+          <button class="del-btn" onclick="deleteScript(${i})"><svg viewBox="0 0 24 24"><polyline points="3,6 5,6 21,6"/><path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2v2"/></svg>Delete</button>
+        </div>
+      </div>`;
+    el.appendChild(card);
+  });
+}
+
+function toggleScript(i) { S.scripts[i].open = !S.scripts[i].open; ss('tb_scripts', S.scripts); renderScripts(); }
+function updateScript(i, f, v) { S.scripts[i][f] = v; ss('tb_scripts', S.scripts); }
+function deleteScript(i) { if (confirm('Delete this script?')) { S.scripts.splice(i, 1); ss('tb_scripts', S.scripts); renderScripts(); } }
+function addScript() {
+  S.scripts.unshift({ id: 's' + Date.now(), day: 'Day ' + getDay(), title: '', status: 'draft', open: true, hook:'', setup:'', build:'', punchline:'', cta:'' });
+  ss('tb_scripts', S.scripts); renderScripts(); switchTab('scripts');
+}
+
+function renderIdeas() {
+  const el = document.getElementById('ideas-list');
+  el.innerHTML = '';
+  const labels = { value:'Value', viral:'Viral', series:'Series', authentic:'Authentic', lifestyle:'Lifestyle' };
+  if (!S.ideas.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">&#10024;</div>Idea vault is empty. Drop something.</div>';
+    return;
+  }
+  S.ideas.forEach((idea, i) => {
+    const item = document.createElement('div');
+    item.className = 'idea-item';
+    item.innerHTML = `
+      <span class="idea-text">${esc(idea.text)}</span>
+      <span class="idea-cat cat-${idea.cat}">${labels[idea.cat] || idea.cat}</span>
+      <button class="idea-del-btn" onclick="deleteIdea(${i})" aria-label="Delete"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+    el.appendChild(item);
+  });
+}
+
+function addIdea() {
+  const input = document.getElementById('idea-input');
+  const cat = document.getElementById('idea-cat').value;
+  const text = input.value.trim();
+  if (!text) return;
+  S.ideas.unshift({ id: 'i' + Date.now(), text, cat });
+  ss('tb_ideas', S.ideas); input.value = ''; renderIdeas();
+}
+
+function deleteIdea(i) { S.ideas.splice(i, 1); ss('tb_ideas', S.ideas); renderIdeas(); }
+
+function renderStoryboards() {
+  const el = document.getElementById('sb-list');
+  el.innerHTML = '';
+  if (!S.storyboards.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">&#9654;</div>No storyboards yet.</div>';
+    return;
+  }
+  S.storyboards.forEach((sb, i) => {
+    const card = document.createElement('div');
+    card.className = 'sb-card' + (sb.open ? ' open' : '');
+    let rowsHtml = '';
+    sb.rows.forEach((row, ri) => {
+      rowsHtml += `<div class="sb-row">
+        <input class="sb-input" value="${esc(row.time||'')}" placeholder="0:00–0:05" oninput="updateSbRow(${i},${ri},'time',this.value)">
+        <input class="sb-input" value="${esc(row.voice||'')}" placeholder="What you say..." oninput="updateSbRow(${i},${ri},'voice',this.value)">
+        <input class="sb-input" value="${esc(row.screen||'')}" placeholder="On screen..." oninput="updateSbRow(${i},${ri},'screen',this.value)">
+      </div>`;
+    });
+    card.innerHTML = `
+      <div class="sb-head" onclick="toggleSb(${i})">
+        <span class="sb-title${!sb.title?' empty':''}">${sb.title || 'Untitled storyboard'}</span>
+        <div class="sb-chevron"><svg viewBox="0 0 24 24"><polyline points="6,9 12,15 18,9"/></svg></div>
+      </div>
+      <div class="sb-body">
+        <div class="sb-table-head"><span>Time</span><span>Voice</span><span>On screen</span></div>
+        ${rowsHtml}
+        <div class="sb-actions">
+          <button class="sb-add-row-btn" onclick="addSbRow(${i})"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add row</button>
+          <input class="sb-title-input" value="${esc(sb.title||'')}" placeholder="Storyboard title" oninput="updateSb(${i},'title',this.value)" style="flex:1">
+          <button class="del-btn" onclick="deleteSb(${i})"><svg viewBox="0 0 24 24"><polyline points="3,6 5,6 21,6"/><path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2v2"/></svg>Delete</button>
+        </div>
+      </div>`;
+    el.appendChild(card);
+  });
+}
+
+function toggleSb(i) { S.storyboards[i].open = !S.storyboards[i].open; ss('tb_sb', S.storyboards); renderStoryboards(); }
+function updateSb(i, f, v) { S.storyboards[i][f] = v; ss('tb_sb', S.storyboards); }
+function updateSbRow(i, ri, f, v) { S.storyboards[i].rows[ri][f] = v; ss('tb_sb', S.storyboards); }
+function addSbRow(i) { S.storyboards[i].rows.push({time:'',voice:'',screen:''}); ss('tb_sb', S.storyboards); renderStoryboards(); }
+function deleteSb(i) { if (confirm('Delete this storyboard?')) { S.storyboards.splice(i, 1); ss('tb_sb', S.storyboards); renderStoryboards(); } }
+function addStoryboard() {
+  S.storyboards.unshift({ id:'sb'+Date.now(), title:'Day '+getDay()+' — ', open:true,
+    rows:[{time:'0:00–0:03',voice:'',screen:''},{time:'0:03–0:10',voice:'',screen:''},{time:'0:10–0:25',voice:'',screen:''},{time:'0:25–0:40',voice:'',screen:''},{time:'0:40–0:55',voice:'',screen:''}]
+  });
+  ss('tb_sb', S.storyboards); renderStoryboards(); switchTab('board');
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.nav-item').forEach((el, i) => {
+    el.classList.toggle('active', ['today','scripts','ideas','board'][i] === name);
+  });
+  document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+renderSidebar(); renderGrid(); renderChecklist(); renderScripts(); renderIdeas(); renderStoryboards();
+</script>
+</body>
+</html>
