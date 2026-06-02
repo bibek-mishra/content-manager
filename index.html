@@ -654,121 +654,81 @@ body {
 .idea-submit-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
 .idea-submit-btn:hover { background: rgba(200, 255, 0, 0.1); border-color: rgba(200, 255, 0, 0.3); }
 
-.sb-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-
-.sb-card {
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: var(--bg2);
-  overflow: hidden;
-  transition: border-color 0.15s;
+.script-fullview-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 100;
+  overflow-y: auto;
+  padding: 40px;
 }
 
-.sb-card:hover { border-color: var(--border2); }
+.script-fullview-modal.open { display: block; }
 
-.sb-head {
-  padding: 14px 18px;
+.script-fullview-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  background: var(--bg2);
+  border-radius: 16px;
+  border: 1px solid var(--border2);
+  overflow: hidden;
+}
+
+.fullview-header {
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
-  gap: 12px;
-  cursor: pointer;
+  justify-content: space-between;
 }
 
-.sb-head:hover { background: var(--bg3); }
-.sb-title { font-size: 14px; font-weight: 600; flex: 1; }
-.sb-title.empty { color: var(--text3); font-style: italic; font-weight: 400; }
+.fullview-title {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
 
-.sb-chevron {
-  width: 16px;
+.fullview-close {
+  background: none;
+  border: none;
   color: var(--text3);
-  transition: transform 0.2s;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+  padding: 4px;
+  transition: color 0.15s;
 }
 
-.sb-chevron svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.sb-card.open .sb-chevron { transform: rotate(180deg); }
+.fullview-close:hover { color: var(--text); }
 
-.sb-body {
-  display: none;
-  padding: 0 18px 18px;
-  border-top: 1px solid var(--border);
-}
+.fullview-body { padding: 28px; }
 
-.sb-card.open .sb-body { display: block; }
-
-.sb-table-head {
-  display: grid;
-  grid-template-columns: 90px 1fr 1fr;
-  gap: 8px;
-  padding: 12px 0 8px;
+.fullview-block {
+  margin-bottom: 24px;
+  padding-bottom: 24px;
   border-bottom: 1px solid var(--border);
-  margin-bottom: 8px;
 }
 
-.sb-table-head span {
+.fullview-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+.fullview-label {
   font-size: 10px;
   font-family: var(--mono);
   color: var(--text3);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
 }
 
-.sb-row {
-  display: grid;
-  grid-template-columns: 90px 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 6px;
-}
-
-.sb-input {
-  padding: 8px 10px;
-  border-radius: 7px;
-  border: 1px solid var(--border);
-  background: var(--bg3);
+.fullview-text {
+  font-size: 15px;
+  line-height: 1.7;
   color: var(--text);
-  font-family: var(--mono);
-  font-size: 12px;
-  transition: border-color 0.15s;
-  width: 100%;
+  white-space: pre-wrap;
 }
 
-.sb-input:focus { outline: none; border-color: var(--accent); }
-
-.sb-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.sb-add-row-btn {
-  padding: 7px 12px;
-  border-radius: 7px;
-  border: 1px dashed var(--border2);
-  background: transparent;
-  color: var(--text3);
-  font-family: var(--mono);
-  font-size: 11px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.15s;
-}
-
-.sb-add-row-btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.sb-add-row-btn:hover { color: var(--accent); border-color: rgba(200, 255, 0, 0.3); }
-
-.sb-title-input {
-  flex: 1;
-  padding: 7px 10px;
-  border-radius: 7px;
-  border: 1px solid var(--border);
-  background: var(--bg3);
-  color: var(--text);
-  font-family: var(--font);
-  font-size: 12px;
-}
-
-.sb-title-input:focus { outline: none; border-color: var(--accent); }
+.fullview-text.empty-text { color: var(--text3); font-style: italic; }
 
 .empty-state {
   text-align: center;
@@ -831,10 +791,7 @@ body {
         <div class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
         Ideas
       </div>
-      <div class="nav-item" onclick="switchTab('board')">
-        <div class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
-        Storyboard
-      </div>
+
     </nav>
 
     <div class="sidebar-footer">
@@ -871,8 +828,12 @@ body {
     </div>
 
     <div id="tab-scripts" class="section">
-      <div class="section-header">
+      <div class="section-header" style="display:flex;align-items:center;justify-content:space-between;">
         <div class="section-title">Scripts</div>
+        <button class="reset-btn" onclick="openFullview()" style="margin-top:0;">
+          <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Full view
+        </button>
       </div>
       <div class="section-body">
         <div class="scripts-list" id="scripts-list"></div>
@@ -906,20 +867,18 @@ body {
       </div>
     </div>
 
-    <div id="tab-board" class="section">
-      <div class="section-header">
-        <div class="section-title">Storyboard</div>
-      </div>
-      <div class="section-body">
-        <div class="sb-list" id="sb-list"></div>
-        <button class="add-card-btn" onclick="addStoryboard()">
-          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          New storyboard
-        </button>
-      </div>
-    </div>
-
   </main>
+</div>
+
+<!-- Full view modal -->
+<div class="script-fullview-modal" id="fullview-modal">
+  <div class="script-fullview-inner">
+    <div class="fullview-header">
+      <div class="fullview-title" id="fullview-title">All Scripts</div>
+      <button class="fullview-close" onclick="closeFullview()">&#x2715;</button>
+    </div>
+    <div class="fullview-body" id="fullview-body"></div>
+  </div>
 </div>
 
 <script>
@@ -936,8 +895,12 @@ const TASKS = [
 function ls(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } }
 function ss(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
 
+// Always force Day 1 = today on first open
+const todayStr = new Date().toDateString();
+if (!localStorage.getItem('tb_start')) ss('tb_start', todayStr);
+
 let S = {
-  startDate:   ls('tb_start', new Date().toDateString()),
+  startDate:   ls('tb_start', todayStr),
   postedDays:  ls('tb_posted', {}),
   checks:      ls('tb_checks', {}),
   scripts:     ls('tb_scripts', [{
@@ -955,19 +918,7 @@ let S = {
     {id:'i4', text:'Hostel mein band rehke skills kaise seekhe', cat:'series'},
     {id:'i5', text:'Indian parents vs ambition', cat:'value'},
   ]),
-  storyboards: ls('tb_sb', [{
-    id:'sb1', title:'Day 1 — Unfair Advantage', open:false,
-    rows:[
-      {time:'0:00–0:03', voice:'Sabse bada unfair advantage...', screen:'Bold text: UNFAIR ADVANTAGE appears'},
-      {time:'0:03–0:10', voice:'Mera naam Bibek, hostel mein rehta hoon', screen:'Backrooms monkey pfp + name text'},
-      {time:'0:10–0:25', voice:'Mobile aur laptop allowed nahi', screen:'Crossed out icons, sad gif'},
-      {time:'0:25–0:40', voice:'Normal 2-3 months, mujhe 7 mahine lage', screen:'Timeline animation: 2-3m vs 7m'},
-      {time:'0:40–0:55', voice:'Day 1 of 30. Follow karo. Signing off.', screen:'DAY 1/30 text. End card.'},
-    ]
-  }])
 };
-
-ss('tb_start', S.startDate);
 
 function getDay() {
   const diff = Math.floor((new Date() - new Date(S.startDate)) / 86400000);
@@ -1135,57 +1086,35 @@ function addIdea() {
 
 function deleteIdea(i) { S.ideas.splice(i, 1); ss('tb_ideas', S.ideas); renderIdeas(); }
 
-function renderStoryboards() {
-  const el = document.getElementById('sb-list');
-  el.innerHTML = '';
-  if (!S.storyboards.length) {
-    el.innerHTML = '<div class="empty-state"><div class="empty-icon">&#9654;</div>No storyboards yet.</div>';
-    return;
-  }
-  S.storyboards.forEach((sb, i) => {
-    const card = document.createElement('div');
-    card.className = 'sb-card' + (sb.open ? ' open' : '');
-    let rowsHtml = '';
-    sb.rows.forEach((row, ri) => {
-      rowsHtml += `<div class="sb-row">
-        <input class="sb-input" value="${esc(row.time||'')}" placeholder="0:00–0:05" oninput="updateSbRow(${i},${ri},'time',this.value)">
-        <input class="sb-input" value="${esc(row.voice||'')}" placeholder="What you say..." oninput="updateSbRow(${i},${ri},'voice',this.value)">
-        <input class="sb-input" value="${esc(row.screen||'')}" placeholder="On screen..." oninput="updateSbRow(${i},${ri},'screen',this.value)">
-      </div>`;
-    });
-    card.innerHTML = `
-      <div class="sb-head" onclick="toggleSb(${i})">
-        <span class="sb-title${!sb.title?' empty':''}">${sb.title || 'Untitled storyboard'}</span>
-        <div class="sb-chevron"><svg viewBox="0 0 24 24"><polyline points="6,9 12,15 18,9"/></svg></div>
+function openFullview() {
+  const modal = document.getElementById('fullview-modal');
+  const body = document.getElementById('fullview-body');
+  if (!S.scripts.length) { body.innerHTML = '<p style="color:var(--text3);font-family:var(--mono);font-size:13px;">No scripts yet.</p>'; modal.classList.add('open'); return; }
+  const fields = ['hook','setup','build','punchline','cta'];
+  const labels = {hook:'Hook — first 3 seconds', setup:'Setup', build:'Build — the meat', punchline:'Punchline / Ending', cta:'CTA / Sign-off'};
+  body.innerHTML = S.scripts.map(sc => `
+    <div class="fullview-block">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <span class="script-day">${esc(sc.day||'')}</span>
+        <span style="font-size:15px;font-weight:700;">${esc(sc.title||'Untitled')}</span>
+        <span class="script-status ${sc.status==='ready'?'status-ready':'status-draft'}" style="margin-left:auto;">${sc.status}</span>
       </div>
-      <div class="sb-body">
-        <div class="sb-table-head"><span>Time</span><span>Voice</span><span>On screen</span></div>
-        ${rowsHtml}
-        <div class="sb-actions">
-          <button class="sb-add-row-btn" onclick="addSbRow(${i})"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add row</button>
-          <input class="sb-title-input" value="${esc(sb.title||'')}" placeholder="Storyboard title" oninput="updateSb(${i},'title',this.value)" style="flex:1">
-          <button class="del-btn" onclick="deleteSb(${i})"><svg viewBox="0 0 24 24"><polyline points="3,6 5,6 21,6"/><path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2v2"/></svg>Delete</button>
-        </div>
-      </div>`;
-    el.appendChild(card);
-  });
+      ${fields.map(f => sc[f] ? `<div style="margin-bottom:14px;"><div class="fullview-label">${labels[f]}</div><div class="fullview-text">${esc(sc[f])}</div></div>` : '').join('')}
+    </div>`).join('');
+  modal.classList.add('open');
 }
 
-function toggleSb(i) { S.storyboards[i].open = !S.storyboards[i].open; ss('tb_sb', S.storyboards); renderStoryboards(); }
-function updateSb(i, f, v) { S.storyboards[i][f] = v; ss('tb_sb', S.storyboards); }
-function updateSbRow(i, ri, f, v) { S.storyboards[i].rows[ri][f] = v; ss('tb_sb', S.storyboards); }
-function addSbRow(i) { S.storyboards[i].rows.push({time:'',voice:'',screen:''}); ss('tb_sb', S.storyboards); renderStoryboards(); }
-function deleteSb(i) { if (confirm('Delete this storyboard?')) { S.storyboards.splice(i, 1); ss('tb_sb', S.storyboards); renderStoryboards(); } }
-function addStoryboard() {
-  S.storyboards.unshift({ id:'sb'+Date.now(), title:'Day '+getDay()+' — ', open:true,
-    rows:[{time:'0:00–0:03',voice:'',screen:''},{time:'0:03–0:10',voice:'',screen:''},{time:'0:10–0:25',voice:'',screen:''},{time:'0:25–0:40',voice:'',screen:''},{time:'0:40–0:55',voice:'',screen:''}]
-  });
-  ss('tb_sb', S.storyboards); renderStoryboards(); switchTab('board');
+function closeFullview() {
+  document.getElementById('fullview-modal').classList.remove('open');
 }
+
+document.getElementById('fullview-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeFullview();
+});
 
 function switchTab(name) {
   document.querySelectorAll('.nav-item').forEach((el, i) => {
-    el.classList.toggle('active', ['today','scripts','ideas','board'][i] === name);
+    el.classList.toggle('active', ['today','scripts','ideas'][i] === name);
   });
   document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
@@ -1193,7 +1122,7 @@ function switchTab(name) {
 
 function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-renderSidebar(); renderGrid(); renderChecklist(); renderScripts(); renderIdeas(); renderStoryboards();
+renderSidebar(); renderGrid(); renderChecklist(); renderScripts(); renderIdeas();
 </script>
 </body>
 </html>
